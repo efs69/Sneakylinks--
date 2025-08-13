@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Sneakylinks — Hostels & Gadgets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#071017; --panel:#0e2630; --card:#0f2a35; --muted:#99b7c3; --text:#e8f8fb;
+      --cyan:#00a7c7; --aqua:#7be3ff; --accent:#23d3b1; --glass: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08); --radius:14px; --shadow: 0 20px 60px rgba(2,8,12,0.6);
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;background:radial-gradient(800px 400px at 10% -10%, rgba(0,167,199,0.06), transparent 20%), linear-gradient(180deg,var(--bg), #031018);color:var(--text);-webkit-font-smoothing:antialiased;touch-action:manipulation}
+    a{color:inherit;text-decoration:none}
+
+    .topbar{position:sticky;top:0;z-index:1200;background:linear-gradient(180deg, rgba(2,12,18,0.95), rgba(2,12,18,0.85));backdrop-filter:blur(6px);border-bottom:1px solid var(--glass-border)}
+    .topbar-inner{max-width:1200px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px;cursor:pointer}
+    .logo{width:46px;height:46px;border-radius:12px;background:conic-gradient(from 180deg at 50% 50%, var(--cyan), var(--aqua), var(--accent));display:grid;place-items:center;font-weight:800;color:#001417;user-select:none}
+    .brand h1{margin:0;font-family:Poppins, sans-serif;font-size:18px;font-weight:800}
+    .brand small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+
+    .hero{max-width:1200px;margin:16px auto;padding:28px 16px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .hero-left{max-width:720px}
+    .hero h2{margin:0;font-size:28px;font-family:Poppins, sans-serif}
+    .hero p{margin:6px 0 12px;color:var(--muted)}
+    .btn{padding:10px 14px;border-radius:12px;border:none;font-weight:800;cursor:pointer}
+    .btn-primary{background:linear-gradient(90deg,var(--cyan),var(--aqua));color:#012;box-shadow:0 10px 28px rgba(0,167,199,.18)}
+    .btn-outline{background:transparent;border:1px solid var(--glass-border);color:var(--aqua)}
+
+    .container{max-width:1200px;margin:0 auto;padding:0 16px}
+    .controls{display:flex;align-items:center;justify-content:space-between;margin:12px 0 18px;gap:12px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:var(--aqua);font-weight:700}
+    .tab.active{background:linear-gradient(90deg, rgba(0,167,199,0.18), rgba(123,227,255,0.12));color:#fff;border-color:rgba(0,167,199,0.28)}
+    .search input{padding:10px 12px;border-radius:10px;border:1px solid var(--glass-border);background:rgba(255,255,255,0.02);color:var(--text);min-width:220px}
+
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:36px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;overflow:hidden;border:1px solid var(--glass-border);box-shadow:var(--shadow);display:flex;flex-direction:column}
+    .imgwrap{position:relative;background:#03181d;cursor:pointer}
+    .imgwrap img{width:100%;height:200px;object-fit:cover;display:block}
+    .card-body{padding:12px}
+    .title{font-weight:800}
+    .spec{color:var(--muted);font-size:13px;margin-top:6px;min-height:32px}
+    .card-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+    .price{font-weight:900;color:var(--aqua)}
+    .actions{display:flex;gap:8px}
+
+    /* Request area visible */
+    .request{margin:18px 0;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid var(--glass-border);box-shadow:var(--shadow)}
+    .request input, .request textarea, .request select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text);margin-top:8px}
+
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:2000;padding:12px}
+    .modal{width:100%;max-width:900px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-radius:14px;overflow:hidden;border:1px solid var(--glass-border);box-shadow:0 30px 90px rgba(0,0,0,.6);color:var(--text)}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    .modal-actions{display:flex;gap:8px;align-items:center}
+    .close-visible{background:linear-gradient(90deg,#fff,#d7faff);color:#021;border:none;padding:10px 12px;border-radius:10px;font-weight:900;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .edit-visible{background:linear-gradient(90deg,var(--cyan),var(--aqua));color:#012;border:none;padding:10px 12px;border-radius:10px;font-weight:900;cursor:pointer;display:none}
+
+    .modal-body{display:grid;grid-template-columns:1fr 420px;gap:14px;padding:12px}
+    .gallery{border-radius:10px;overflow:hidden;background:#05171b}
+    .main-img{width:100%;height:420px;object-fit:cover;display:block}
+    .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+    .thumbs img{width:100%;height:68px;object-fit:cover;border-radius:8px;cursor:pointer;opacity:.9;border:2px solid transparent}
+    .thumbs img.active{opacity:1;border-color:var(--accent)}
+
+    .info{padding:6px}
+    .info label{display:block;font-size:13px;color:var(--muted);margin-top:8px}
+    .info input, .info textarea, .info select{width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:var(--text)}
+
+    .send-wa{background:linear-gradient(90deg,var(--accent),#7bf3dc);color:#012;border:none;padding:10px;border-radius:10px;font-weight:900;margin-top:10px;cursor:pointer;width:100%}
+
+    .edit-area{display:none;margin-top:8px;border-top:1px dashed rgba(255,255,255,0.06);padding-top:10px}
+    .file-row{display:flex;gap:8px;align-items:center;margin-top:8px}
+    .file-row input[type=file]{flex:0 0 auto}
+    .save-btn{background:linear-gradient(90deg,var(--cyan),var(--aqua));color:#012;border:none;padding:10px;border-radius:10px;font-weight:900;margin-top:10px;cursor:pointer;width:100%}
+
+    .view-modal .modal-body{grid-template-columns:1fr; padding:0}
+    .view-modal .main-img{height:60vh}
+    .view-modal .thumbs{padding:12px}
+
+    .admin-badge{position:fixed;left:12px;bottom:12px;background:linear-gradient(90deg,var(--cyan),var(--aqua));color:#021;padding:8px 12px;border-radius:999px;font-weight:800;display:none;z-index:3000;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+
+    footer{padding:28px;text-align:center;color:var(--muted)}
+
+    @media (max-width:980px){ .modal-body{grid-template-columns:1fr} .main-img{height:320px} .grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:680px){ .grid{grid-template-columns:1fr} .imgwrap img{height:180px} .main-img{height:260px} .thumbs img{height:60px} .close-visible, .edit-visible{padding:12px 14px;font-size:15px} .hero{padding:18px 12px} }
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="topbar-inner"><div class="brand" id="brandTap"><div class="logo" id="logo">SL</div><div><h1>Sneakylinks</h1><small>Hostels & Gadgets</small></div></div><div style="display:flex;gap:8px;align-items:center"><div style="background:linear-gradient(90deg,var(--cyan),var(--aqua));padding:8px 12px;border-radius:10px;color:#012;font-weight:900">WhatsApp Orders</div><div style="color:var(--muted);font-size:13px;margin-left:8px">0597053192 • 0594708232 • 0594438054</div></div></div></header>
+
+  <section class="hero"><div class="hero-left"><h2>Comfortable stays & trusted gadgets — book on WhatsApp</h2><p>Browse quality hostels and gadgets. Tap images to view photos, ask questions, or book instantly.</p><div class="actions"><button class="btn btn-primary" onclick="filterType('hostel')">Hostels</button><button class="btn btn-outline" onclick="filterType('gadget')">Gadgets</button></div></div><div style="width:280px"></div></section>
+
+  <main class="container">
+    <div class="controls"><div class="tabs" role="tablist"><button class="tab active" data-filter="all" onclick="setTab(this)">All</button><button class="tab" data-filter="hostel" onclick="setTab(this)">Hostels</button><button class="tab" data-filter="gadget" onclick="setTab(this)">Gadgets</button></div><div class="search"><input id="search" type="search" placeholder="Search name, spec, price..." oninput="applyFilters()"></div></div>
+
+    <section id="products"><div class="grid" id="grid"></div></section>
+
+    <section class="request" id="requestSection">
+      <h3>Request a specific product</h3>
+      <label>Your name</label>
+      <input id="reqName" placeholder="Your full name">
+      <label>Telephone</label>
+      <input id="reqTel" placeholder="024XXXXXXX">
+      <label>Location</label>
+      <input id="reqLoc" placeholder="e.g., Accra">
+      <label>Describe what you want</label>
+      <textarea id="reqText" rows="3" placeholder="e.g., iPhone 13, single room near campus"></textarea>
+      <label>Send to WhatsApp</label>
+      <select id="reqWa"><option value="0597053192">0597053192</option><option value="0594708232">0594708232</option><option value="0594438054">0594438054</option></select>
+      <button class="send-wa" onclick="sendRequest()">Send Request via WhatsApp</button>
+    </section>
+  </main>
+
+  <!-- View Modal: images-only (for users and admin) -->
+  <div class="overlay" id="viewOverlay">
+    <div class="modal view-modal" id="viewModal">
+      <div class="modal-head">
+        <div class="modal-title" id="viewTitle">Photos</div>
+        <div class="modal-actions"><button class="close-visible" id="viewClose">Close</button></div>
+      </div>
+      <div class="modal-body">
+        <div class="gallery"><img id="viewMain" class="main-img" src="" alt=""><div class="thumbs" id="viewThumbs"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Modal: includes booking form and admin edit area -->
+  <div class="overlay" id="bookingOverlay">
+    <div class="modal" id="bookingModal">
+      <div class="modal-head">
+        <div class="modal-title" id="bookingTitle">Booking</div>
+        <div class="modal-actions"><button class="edit-visible" id="bookingEdit">Edit</button><button class="close-visible" id="bookingClose">Close</button></div>
+      </div>
+      <div class="modal-body">
+        <div class="gallery"><img id="bookingMain" class="main-img" src="" alt=""><div class="thumbs" id="bookingThumbs"></div></div>
+        <div class="info">
+          <label>Price</label><input id="bookingPrice" readonly>
+          <label>Specifications</label><textarea id="bookingSpecs" rows="4" readonly></textarea>
+          <label style="margin-top:8px">Your name</label><input id="bookName">
+          <label>Telephone</label><input id="bookPhone">
+          <label>Location</label><input id="bookLocation">
+          <label>Send to WhatsApp</label><select id="bookWa"><option value="0597053192">0597053192</option><option value="0594708232">0594708232</option><option value="0594438054">0594438054</option></select>
+          <button class="send-wa" id="bookingSend">Send Booking via WhatsApp</button>
+
+          <div class="edit-area" id="bookingEditArea">
+            <h4>Admin — Quick Edit</h4>
+            <label>Title</label><input id="editTitle">
+            <label>Price</label><input id="editPrice">
+            <label>Specs</label><textarea id="editSpecs" rows="3"></textarea>
+            <div class="file-row"><input id="url0" placeholder="Image 1 URL"><input type="file" id="file0" accept="image/*"></div>
+            <div class="file-row"><input id="url1" placeholder="Image 2 URL"><input type="file" id="file1" accept="image/*"></div>
+            <div class="file-row"><input id="url2" placeholder="Image 3 URL"><input type="file" id="file2" accept="image/*"></div>
+            <div class="file-row"><input id="url3" placeholder="Image 4 URL"><input type="file" id="file3" accept="image/*"></div>
+            <button class="save-btn" id="saveBookingEdit">Save Changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-badge" id="adminBadge">Admin</div>
+  <footer>© Sneakylinks — Fresh cyan/aqua theme • Mobile-ready</footer>
+
+  <script>
+    // prevent double-tap zoom
+    (function(){ let lastTouch=0; document.addEventListener('touchend', function(e){ const now=Date.now(); if(now-lastTouch<=300){ e.preventDefault(); } lastTouch=now; }, {passive:false}); document.addEventListener('dblclick', e=>e.preventDefault()); })();
+
+    const LS_KEY = 'sneakylinks_products_vfinal';
+    const defaultProducts = (()=>{
+      const hostels = [...Array(10)].map((_,i)=>({ id:'hostel-'+(i+1), type:'hostel', name:['Palm Court Studio','Cedar View Annex','Blue Haven Loft','Sunset Residences','Aqua Ridge Flats','Harbor House','Maple Grove','Coral Court','Vista Point','Campus Edge'][i], price:['GH₵ 950/month','GH₵ 1,200/month','GH₵ 1,450/month','GH₵ 1,100/month','GH₵ 1,350/month','GH₵ 900/month','GH₵ 1,600/month','GH₵ 800/month','GH₵ 1,700/month','GH₵ 1,000/month'][i], specs:['Studio • Wi‑Fi • Near Campus','1‑Bedroom • AC • Secure','Loft • Balcony • Water','Single • Furnished • Shops','2‑Bedroom • Kitchen • Parking','Shared • Wi‑Fi • Transport','2‑Bedroom • AC • Balcony','Single • Near Uni','3‑Bedroom • Furnished','Studio • Security'][i], images:[`https://picsum.photos/seed/hostel${i+1}a/1200/800`,`https://picsum.photos/seed/hostel${i+1}b/1200/800`,`https://picsum.photos/seed/hostel${i+1}c/1200/800`,`https://picsum.photos/seed/hostel${i+1}d/1200/800`] }));
+      const gadgets = [...Array(10)].map((_,i)=>({ id:'gadget-'+(i+1), type:'gadget', name:['NeoPhone X','AeroBook 14','Tablite 10','Pulse Watch','EchoBuds Pro','Lumix Z24','BassBox Mini','GameSphere S','SkyFly Drone','ColorJet 310'][i], price:['GH₵ 3,200','GH₵ 5,800','GH₵ 2,100','GH₵ 950','GH₵ 600','GH₵ 4,200','GH₵ 720','GH₵ 3,900','GH₵ 2,850','GH₵ 1,150'][i], specs:['128GB • 5G','i5 • 16GB • 512GB','10” • 64GB','Waterproof • 7-day','ANC • Wireless','24MP • 4K','Bluetooth • Bass','1TB • 4K HDR','1080p • GPS Hold','Wireless • Color'][i], images:[`https://picsum.photos/seed/gadget${i+1}a/1200/800`,`https://picsum.photos/seed/gadget${i+1}b/1200/800`,`https://picsum.photos/seed/gadget${i+1}c/1200/800`,`https://picsum.photos/seed/gadget${i+1}d/1200/800`] }));
+      return [...hostels, ...gadgets];
+    })();
+
+    let products = JSON.parse(localStorage.getItem(LS_KEY) || 'null') || defaultProducts;
+    let adminMode = false;
+    const grid = document.getElementById('grid');
+
+    function renderGrid(){
+      grid.innerHTML='';
+      products.forEach(p=>{
+        const card = document.createElement('div');
+        card.className='card'; card.dataset.id=p.id;
+        card.innerHTML = `
+          <div class="imgwrap"><img src="${p.images[0]}" alt="${p.name}" loading="lazy" onerror="this.src='https://picsum.photos/seed/fallback/1200/800'"></div>
+          <div class="card-body"><div class="title">${p.name}</div><div class="spec">${p.specs}</div>
+          <div class="card-row"><div class="price">${p.price}</div>
+          <div class="actions"><button class="btn-ghost" onclick="openView('${p.id}')">View</button><button class="btn-primary" onclick="openBooking('${p.id}')">Book</button></div></div></div>`;
+        // clicking image opens view (images-only)
+        card.querySelector('.imgwrap').addEventListener('click', ()=> openView(p.id));
+        grid.appendChild(card);
+      });
+      applyFilters();
+    }
+
+    function setTab(btn){ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); applyFilters(); }
+    function filterType(type){ const btn = document.querySelector(`.tab[data-filter="${type}"]`); if(btn) setTab(btn); }
+    function applyFilters(){ const q = document.getElementById('search').value.trim().toLowerCase(); const active = document.querySelector('.tab.active').dataset.filter; document.querySelectorAll('.card').forEach(card=>{ const id = card.dataset.id; const p = products.find(x=>x.id===id); let show=true; if(active!=='all' && p.type!==active) show=false; if(q){ const hay = (p.name+' '+p.specs+' '+p.price).toLowerCase(); if(!hay.includes(q)) show=false; } card.style.display = show ? 'flex' : 'none'; }); }
+
+    // View modal (images-only)
+    const viewOverlay = document.getElementById('viewOverlay'), viewMain = document.getElementById('viewMain'), viewThumbs = document.getElementById('viewThumbs'), viewTitle = document.getElementById('viewTitle'), viewClose = document.getElementById('viewClose');
+    let currentId = null, currentIndex = 0;
+
+    function openView(id){
+      const p = products.find(x=>x.id===id); if(!p) return;
+      currentId = id; viewTitle.textContent = p.name; buildViewThumbs(p.images || []); setViewPhoto(0); viewOverlay.style.display='flex'; viewClose.focus();
+    }
+    function buildViewThumbs(imgs){ viewThumbs.innerHTML=''; const arr = imgs.slice(0,4); arr.forEach((src,i)=>{ const im = document.createElement('img'); im.src = src; im.alt = 'photo '+(i+1); if(i===0) im.classList.add('active'); im.addEventListener('click', ()=> setViewPhoto(i)); viewThumbs.appendChild(im); }); }
+    function setViewPhoto(i){ const p = products.find(x=>x.id===currentId); if(!p) return; currentIndex = i; viewMain.src = p.images && p.images[i] ? p.images[i] : (p.images && p.images[0]) ? p.images[0] : ''; Array.from(viewThumbs.querySelectorAll('img')).forEach((t,idx)=> t.classList.toggle('active', idx===i)); }
+    // swipe for view
+    (function(){ let sx=0; viewMain.addEventListener('touchstart', e=> sx = e.touches[0].clientX, {passive:true}); viewMain.addEventListener('touchend', e=>{ const ex = e.changedTouches[0].clientX; const dx = ex - sx; const p = products.find(x=>x.id===currentId); if(!p) return; const n = Math.max(1, (p.images||[]).length); if(Math.abs(dx) > 40){ if(dx < 0) currentIndex = (currentIndex+1)%n; else currentIndex = (currentIndex-1 + n)%n; setViewPhoto(currentIndex); } }, {passive:true}); })();
+    viewClose.addEventListener('click', ()=> viewOverlay.style.display='none'); viewOverlay.addEventListener('click', e=>{ if(e.target===viewOverlay) viewOverlay.style.display='none'; }); window.addEventListener('keydown', e=>{ if(e.key==='Escape'){ viewOverlay.style.display='none'; bookingOverlay.style.display='none'; } });
+
+    // Booking modal (form + admin edit)
+    const bookingOverlay = document.getElementById('bookingOverlay'), bookingMain = document.getElementById('bookingMain'), bookingThumbs = document.getElementById('bookingThumbs'), bookingTitle = document.getElementById('bookingTitle'), bookingPrice = document.getElementById('bookingPrice'), bookingSpecs = document.getElementById('bookingSpecs'), bookingClose = document.getElementById('bookingClose'), bookingEdit = document.getElementById('bookingEdit'), bookingEditArea = document.getElementById('bookingEditArea'), bookingSend = document.getElementById('bookingSend');
+    function openBooking(id){
+      const p = products.find(x=>x.id===id); if(!p) return;
+      currentId = id; bookingTitle.textContent = p.name; bookingPrice.value = p.price || ''; bookingSpecs.value = p.specs || ''; buildBookingThumbs(p.images || []); setBookingPhoto(0); bookingOverlay.style.display='flex'; bookingEdit.style.display = adminMode ? 'inline-block' : 'none'; bookingEditArea.style.display='none'; bookingClose.focus();
+    }
+    function buildBookingThumbs(imgs){ bookingThumbs.innerHTML=''; (imgs.slice(0,4)).forEach((src,i)=>{ const im = document.createElement('img'); im.src = src; im.alt = 'tb '+(i+1); if(i===0) im.classList.add('active'); im.addEventListener('click', ()=> setBookingPhoto(i)); bookingThumbs.appendChild(im); }); }
+    let bookingIndex = 0;
+    function setBookingPhoto(i){ const p = products.find(x=>x.id===currentId); if(!p) return; bookingIndex = i; bookingMain.src = p.images && p.images[i] ? p.images[i] : (p.images && p.images[0]) ? p.images[0] : ''; Array.from(bookingThumbs.querySelectorAll('img')).forEach((t,idx)=> t.classList.toggle('active', idx===i)); }
+    // swipe booking
+    (function(){ let sx=0; bookingMain.addEventListener('touchstart', e=> sx = e.touches[0].clientX, {passive:true}); bookingMain.addEventListener('touchend', e=>{ const ex = e.changedTouches[0].clientX; const dx = ex - sx; const p = products.find(x=>x.id===currentId); if(!p) return; const n = Math.max(1, (p.images||[]).length); if(Math.abs(dx)>40){ if(dx<0) bookingIndex = (bookingIndex+1)%n; else bookingIndex = (bookingIndex-1 + n)%n; setBookingPhoto(bookingIndex); } }, {passive:true}); })();
+    bookingClose.addEventListener('click', ()=> bookingOverlay.style.display='none'); bookingOverlay.addEventListener('click', e=>{ if(e.target===bookingOverlay) bookingOverlay.style.display='none'; });
+
+    // Booking send
+    bookingSend.addEventListener('click', ()=>{
+      const p = products.find(x=>x.id===currentId); if(!p) return;
+      const name = document.getElementById('bookName').value.trim(); const phone = document.getElementById('bookPhone').value.trim(); const loc = document.getElementById('bookLocation').value.trim(); const wa = document.getElementById('bookWa').value;
+      const price = bookingPrice.value.trim() || p.price || ''; const specs = bookingSpecs.value.trim() || p.specs || '';
+      if(!name || !phone || !loc){ alert('Please fill name, telephone and location'); return; }
+      const waIntl = '233'+ wa.slice(1);
+      const msg = `Booking Details:%0AProduct: ${encodeURIComponent(p.name)}%0APrice: ${encodeURIComponent(price)}%0ASpecs: ${encodeURIComponent(specs)}%0AName: ${encodeURIComponent(name)}%0ALocation: ${encodeURIComponent(loc)}%0ATel: ${encodeURIComponent(phone)}`;
+      window.open(`https://wa.me/${waIntl}?text=${msg}`, '_blank');
+    });
+
+    // Admin unlock
+    (function(){ const logo = document.getElementById('logo'); let taps=0, timer=null; logo.addEventListener('click', ()=>{ taps++; clearTimeout(timer); timer=setTimeout(()=>taps=0,1000); if(taps>=5){ taps=0; const pw = prompt('Enter admin password:'); if(pw==='sneaky123'){ adminMode=true; document.getElementById('adminBadge').style.display='block'; alert('Admin enabled'); } else alert('Wrong password'); } }); window.addEventListener('keydown', e=>{ if(e.key.toLowerCase()==='l'){ const pw = prompt('Admin password:'); if(pw==='sneaky123'){ adminMode=true; document.getElementById('adminBadge').style.display='block'; alert('Admin enabled'); } } }); })();
+
+    // Booking modal edit area toggling & prefill
+    bookingEdit.addEventListener('click', ()=>{
+      if(!adminMode){ alert('Enable admin mode (tap logo 5×)'); return; }
+      const p = products.find(x=>x.id===currentId); if(!p) return;
+      bookingEditArea.style.display = bookingEditArea.style.display==='block' ? 'none' : 'block';
+      document.getElementById('editTitle').value = p.name; document.getElementById('editPrice').value = p.price; document.getElementById('editSpecs').value = p.specs;
+      for(let i=0;i<4;i++){ document.getElementById('url'+i).value = p.images[i] || ''; document.getElementById('file'+i).value = ''; }
+    });
+
+    // Save booking edits (admin): supports file uploads from gallery (data URLs)
+    document.getElementById('saveBookingEdit').addEventListener('click', ()=>{
+      if(!adminMode) return alert('Admin required');
+      const p = products.find(x=>x.id===currentId); if(!p) return;
+      p.name = document.getElementById('editTitle').value || p.name; p.price = document.getElementById('editPrice').value || p.price; p.specs = document.getElementById('editSpecs').value || p.specs;
+      for(let i=0;i<4;i++){
+        const url = document.getElementById('url'+i).value.trim(); if(url) p.images[i] = url;
+        const fileInput = document.getElementById('file'+i); if(fileInput.files && fileInput.files[0]){
+          const fr = new FileReader();
+          fr.onload = (ev)=>{ p.images[i] = ev.target.result; persist(); renderGrid(); openBooking(currentId); };
+          fr.readAsDataURL(fileInput.files[0]);
+        }
+      }
+      persist(); renderGrid(); bookingEditArea.style.display='none'; alert('Saved');
+    });
+
+    function persist(){ localStorage.setItem(LS_KEY, JSON.stringify(products)); }
+
+    // Custom request send
+    function sendRequest(){
+      const name = document.getElementById('reqName').value.trim(); const tel = document.getElementById('reqTel').value.trim(); const loc = document.getElementById('reqLoc').value.trim(); const text = document.getElementById('reqText').value.trim(); const wa = document.getElementById('reqWa').value;
+      if(!text){ alert('Please describe what you want.'); return; }
+      const waIntl = '233' + wa.slice(1); const msg = `Customer Request:%0AName: ${encodeURIComponent(name)}%0ATel: ${encodeURIComponent(tel)}%0ALocation: ${encodeURIComponent(loc)}%0ARequest: ${encodeURIComponent(text)}`;
+      window.open(`https://wa.me/${waIntl}?text=${msg}`, '_blank');
+    }
+    window.sendRequest = sendRequest;
+
+    // Init
+    renderGrid();
+  </script>
+</body>
+</html>
